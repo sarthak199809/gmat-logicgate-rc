@@ -16,7 +16,7 @@ export type Passage = {
 };
 
 export async function fetchPassages(): Promise<Passage[]> {
-    const response = await fetch('data/passages.csv');
+    const response = await fetch('/gmatrcMVP/data/passages.csv');
     const csvText = await response.text();
 
     return new Promise((resolve, reject) => {

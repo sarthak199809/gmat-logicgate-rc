@@ -46,7 +46,7 @@ export default function Home() {
     const expertParagraph = currentPassage.paragraphs[index];
 
     try {
-      const response = await fetch('api/evaluate', {
+      const response = await fetch('/gmatrcMVP/api/evaluate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

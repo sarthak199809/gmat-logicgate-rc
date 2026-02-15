@@ -9,3 +9,9 @@ services:
       - .env.local
     environment:
       - NODE_ENV=production
+    volumes:
+      - ./public/data/passages.csv:/app/public/data/passages.csv
+
+# networks:
+#   n8n-docker_default:
+#     external: true

@@ -35,20 +35,30 @@ export async function POST(request: Request) {
             throw new Error('Failed to fetch analysis from n8n');
         }
 
-        const result = await response.json();
+        const resultText = await response.text();
+        let result;
+        try {
+            result = JSON.parse(resultText);
+        } catch (e) {
+            console.error('Failed to parse n8n response as JSON. Raw body:', resultText);
+            throw new Error(`Invalid JSON response from n8n: ${resultText.substring(0, 100)}`);
+        }
 
         // n8n Agent nodes can return deeply nested arrays/objects
-        // Extract paragraphs from result[0].output[0].output.paragraphs or similar
         let data = result;
         if (Array.isArray(data)) data = data[0];
         if (data && data.output) {
             if (Array.isArray(data.output)) data = data.output[0];
             else data = data.output;
         }
-        if (data && data.output) data = data.output; // Some agents nest output twice
+        if (data && data.output) data = data.output;
 
-        const finalData = data || {};
-        return NextResponse.json(finalData);
+        if (!data || !data.paragraphs) {
+            console.error('N8N response missing paragraphs:', data);
+            throw new Error('Analysis response structure invalid');
+        }
+
+        return NextResponse.json(data);
     } catch (error: any) {
         console.error('Error in /api/analyze:', error);
         return NextResponse.json({ error: error.message }, { status: 500 });
